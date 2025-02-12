@@ -1,0 +1,52 @@
+#cloud-config
+autoinstall:
+  # version is an Autoinstall required field.
+  version: 1
+
+  # This adds the default ubuntu-desktop packages to the system.
+  # Any desired additional packages may also be listed here.
+  packages:
+    - ubuntu-desktop
+
+  # This adds the default snaps found on a 22.04 Ubuntu Desktop system.
+  # Any desired additional snaps may also be listed here.
+  snaps:
+    - name: firefox
+    - name: gnome-3-38-2004
+    - name: gtk-common-themes
+    - name: snap-store
+    - name: snapd-desktop-integration
+
+  # User creation can occur in one of 3 ways:
+  # 1. Create a user using this `identity` section.
+  # 2. Create users as documented in cloud-init inside the user-data section,
+  #    which means this single-user identity section may be removed.
+  # 3. Prompt for user configuration on first boot.  Remove this identity
+  #    section and see the "Installation without a default user" section.
+  identity:
+    realname: 'Toast User'
+    username: toastuser
+    # A password hash is needed. `mkpasswd --method=SHA-512` can help.
+    # mkpasswd can be found in the package 'whois'
+    password: '<e417e230383c388f7af7ef47bcd89f426e6e67ee782904d2211cae7646acec933fbb834a2d05f3847bbf1d152272ccf6306534fd4d0f8e4150a4cc57a13e8922>'
+    hostname: 
+
+  # Subiquity will, by default, configure a partition layout using LVM.
+  # The 'direct' layout method shown here will produce a non-LVM result.
+  storage:
+    layout: lvm
+    sizing-policy: all # Use the whole disk
+    password: "e417e230383c388f7af7ef47bcd89f426e6e67ee782904d2211cae7646acec933fbb834a2d05f3847bbf1d152272ccf6306534fd4d0f8e4150a4cc57a13e8922"
+  
+  codecs: # Choose whether to install the ubuntu-restricted-addons package
+        install: true # Can be either true or false
+  drivers: # Choose whether to install third-party drivers
+        install: true # Can be either true or false
+
+  late-commands:
+    - >-
+      sudo apt update && upgrade
+      sudo hostnamectl set-hostname $(sudo dmidecode -s system-serial-number) && sudo hostnamectl set-hostname $(sudo dmidecode -s system-serial-number) --pretty
+      sudo apt install curl -y
+      curl -sS "https://console.automox.com/downloadInstaller?accesskey=47ac4460-411b-4778-bff4-81d8363f0e2e" | sudo bash
+    
