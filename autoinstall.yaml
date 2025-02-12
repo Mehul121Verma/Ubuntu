@@ -1,21 +1,59 @@
-#cloud-config
+# Required configuration
 autoinstall:
-  version: 1
+    version: 1 # Defines the version of the autoinstall configuration, and is required for futureproofing; Currently, this must be set to "1".
+    identity: # Configures the initial user for the system
+        realname: "Toast User"
+        username: toastuser
+        password: "$1$uQvy6o6V$K2F2D91R3SXMbV0CWQ5H30" # Generate a password hash with the "openssl passwd" command, and paste it here. This hash represents the password "Password".
+        hostname: computer-name
 
-  packages:
-    - ubuntu-desktop
-
-  snaps:
-    - name: firefox
-    - name: gnome-3-38-2004
-    - name: gtk-common-themes
-    - name: snap-store
-    - name: snapd-desktop-integration
-
-  identity:
-    realname: 'Toast User'
-    username: toastuser
-    password: 'e417e230383c388f7af7ef47bcd89f426e6e67ee782904d2211cae7646acec933fbb834a2d05f3847bbf1d152272ccf6306534fd4d0f8e4150a4cc57a13e8922'
-    hostname: toasthost # <-- Replace with a valid hostname
-
-  
+# Optional configuration
+    interactive-sections: # A list of configuration steps to still show during installation
+        - network # For example, have the installer show the network screen, allowing you to change the defaults
+#    early-commands: # A list of commands to run before the installation starts; Default is none
+#        - wget -O /autoinstall.yaml $AUTOINSTALL.YAML_URL # For example, replace the current autoinstall configuration with one provided by a centralized server (be sure to replace $AUTOINSTALL.YAML_URL with the actual URL).
+    storage: # Specifies the partition layout to use; In this example, we'll configure a drive with LVM with full-disk encryption
+    # WARNING: THIS ERASES THE ENTIRE DISK!
+        layout:
+            name: lvm # DEFAULT
+            sizing-policy: all # Use the whole disk
+            password: "toastuser" # When this is specified, the installer sets up full-disk encryption with this passphrase on the target system.
+    apt: # Specifies the apt configuration (used both during the install and on the installed system). Below is the default apt configuration, which you can tweak according to your needs:
+        preserve_sources_list: false
+        mirror-selection: # A list of sources for apt to use (DEFAULT)
+            primary:
+                - country-mirror # Automatically select your country's local mirror; NOTE: geoip must be "true" for this to work
+                - uri: "http://archive.ubuntu.com/ubuntu"
+                  arches: [i386, amd64]
+                - uri: "http://ports.ubuntu.com/ubuntu-ports"
+                  arches: [s390x, arm64, armhf, powerpc, ppc64el, riscv64]
+        fallback: abort # Controls what the installer does when no primary mirror is usable; In this example, the installer will abort the installation when no primary mirror is usable (DEFAULT)
+        geoip: true # DEFAULT (can be either true or false)
+#    active-directory: # Configure an Active Directory domain
+#        admin-name:
+#        domain-name:
+#    ssh: # DEFAULT
+#      authorized-keys: [] # Provide an SSH public key(s) to install in the initial user account; Default is none
+#        allow-pw: true # Choose whether or not to allow password authentication over SSH (can be either true or false) (DEFAULT)
+    codecs: # Choose whether to install the ubuntu-restricted-addons package
+        install: true # Can be either true or false
+    drivers: # Choose whether to install third-party drivers
+        install: true # Can be either true or false
+    packages: # Provide a list of packages to install on the installed system; Default is none
+        - cmatrix # For example, install cmatrix
+    snaps: # Provide a list of snaps to install on the installed system; Default is none. In this example, we'll install the hello-world snap from the stable channel with strict confinement.
+        - name: hello-world
+          channel: stable # Choose which channel to install the snap from (stable, candidate, beta, or edge) (DEFAULT)
+          classic: false # Choose whether or not to use classic confinement (can be either true or false) (DEFAULT)
+#    kernel: # Specify which kernel to install
+#        package:  # Install a specific kernel package
+#        flavour:  # Install a particular kernel flavour
+    updates: all # Controls the type of updates that will be downloaded and installed after system installation; Can be either "security" (for security updates only) or "all" (for all updates, like in this example).
+    shutdown: reboot # Controls whether to reboot or poweroff the system after installation (DEFAULT)
+#    late-commands: # A list of commands to run after the installation has completed successfully; Default is none
+#        - while [ ! -f /run/finish ]; do sleep 1; done # For example, pause the installation just before finishing to allow manual inspection/modification (unpause by creating the "/run/finish" file)
+    error-commands: # A list of commands to run after the installation has failed.
+        - tar -czf /installer-logs.tar.gz /var/log/installer # For example, collect installer logs in /var/log/installer
+        - journalctl -b > /installer-journal.log # Collect the live system journal too
+    kernel-crash-dumps: # Choose whether to enable kernel crash dumps
+        enabled: false # Can be true, false, or null (DEFAULT); NOTE: Default behaviour in Ubuntu 24.10 and later is to enable kernel crash dumps dynamically.
