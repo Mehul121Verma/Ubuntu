@@ -1,21 +1,21 @@
-# Required configuration
 autoinstall:
-    version: 1 # Defines the version of the autoinstall configuration, and is required for futureproofing; Currently, this must be set to "1".
-    identity: # Configures the initial user for the system
+    version: 1
+    identity:
         realname: "Toast User"
         username: toastuser
-        password: "$1$uQvy6o6V$K2F2D91R3SXMbV0CWQ5H30" # Generate a password hash with the "openssl passwd" command, and paste it here. This hash represents the password "Password".
+        password: "$1$uQvy6o6V$K2F2D91R3SXMbV0CWQ5H30" # Password hash
         hostname: computer-name
-    storage: # Specifies the partition layout to use; In this example, we'll configure a drive with LVM with full-disk encryption
-    # WARNING: THIS ERASES THE ENTIRE DISK!
+    storage:
         layout:
-            name: lvm # DEFAULT
-            sizing-policy: all # Use the whole disk
-            password: "toastuser" # When this is specified, the installer sets up full-disk encryption with this passphrase on the target system.
-        fallback: abort # Controls what the installer does when no primary mirror is usable; In this example, the installer will abort the installation when no primary mirror is usable (DEFAULT)
-        geoip: true # DEFAULT (can be either true or false)
-    codecs: # Choose whether to install the ubuntu-restricted-addons package
-        install: true # Can be either true or false
-    drivers: # Choose whether to install third-party drivers
-        install: true # Can be either true or false
-    shutdown: reboot # Controls whether to reboot or poweroff the system after installation (DEFAULT)
+            name: lvm
+            devices:
+                - /dev/sda  # Ensure this is the correct disk
+            sizing-policy: all
+            password: "toastuser" # Full-disk encryption passphrase
+    fallback: abort
+    geoip: true
+    codecs:
+        install: true
+    drivers:
+        install: true
+    shutdown: reboot
