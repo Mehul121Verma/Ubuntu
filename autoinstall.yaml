@@ -12,15 +12,6 @@ autoinstall:
             name: lvm # DEFAULT
             sizing-policy: all # Use the whole disk
             password: "toastuser" # When this is specified, the installer sets up full-disk encryption with this passphrase on the target system.
-    apt: # Specifies the apt configuration (used both during the install and on the installed system). Below is the default apt configuration, which you can tweak according to your needs:
-        preserve_sources_list: false
-        mirror-selection: # A list of sources for apt to use (DEFAULT)
-            primary:
-                - country-mirror # Automatically select your country's local mirror; NOTE: geoip must be "true" for this to work
-                - uri: "http://archive.ubuntu.com/ubuntu"
-                  arches: [i386, amd64]
-                - uri: "http://ports.ubuntu.com/ubuntu-ports"
-                  arches: [s390x, arm64, armhf, powerpc, ppc64el, riscv64]
         fallback: abort # Controls what the installer does when no primary mirror is usable; In this example, the installer will abort the installation when no primary mirror is usable (DEFAULT)
         geoip: true # DEFAULT (can be either true or false)
     codecs: # Choose whether to install the ubuntu-restricted-addons package
