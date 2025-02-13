@@ -8,6 +8,8 @@ autoinstall:
     storage:
         layout:
             name: lvm
+            devices:
+                - /dev/sda  # Make sure to specify the correct disk
             sizing-policy: all
             password: "toastuser" # Full-disk encryption passphrase
     fallback: abort
