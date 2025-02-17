@@ -1,31 +1,26 @@
-#cloud-config
 autoinstall:
-  # version is an Autoinstall required field.
   version: 1
+  source:
+    id: ubuntu-desktop-minimal
+  keyboard:
+    layout: us
   identity:
-    realname: 'toastuser'
-    username: ubuntu
-    # A password hash is needed. `mkpasswd --method=SHA-512` can help.
-    # mkpasswd can be found in the package 'whois'
-    password: '$1$uQvy6o6V$K2F2D91R3SXMbV0CWQ5H30'
     hostname: ubuntu-desktop
+    realname: 'CPE Admin'
+    username: cpe-admin
+    password: '$6$jszmQ7fFW80zzX8X$X5LdFGA63HFTrKS4xJ2kE5jWwZW9Gf/.9pAqqx/4YD4Anr86AbPCGR/Smqylv1V460.K4WAAzfith6Vb2JGbR/' # password is SM37kQiy7iAZB6S
   storage:
     layout:
       name: lvm
-      sizing-policy: all
-      password: "toastuser"
-
-  late-commands:
-    # Enable the boot splash
-    - >-
-      curtin in-target --
-      sed -i /etc/default/grub -e
-      's/GRUB_CMDLINE_LINUX_DEFAULT=".*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/'
-    - curtin in-target -- update-grub
-    - >-
-      sudo hostnamectl set-hostname $(sudo dmidecode -s system-serial-number) && sudo hostnamectl set-hostname $(sudo dmidecode -s system-serial-number) --pretty
-    - >-
-      sudo apt install curl -y
-      curl -sS "https://console.automox.com/downloadInstaller?accesskey=47ac4460-411b-4778-bff4-81d8363f0e2e" | sudo bash
-    - >-
-      sudo apt update && sudo apt upgrade -y
+      password: SM37kQiy7iAZB6S
+  drivers:
+    install: true
+  packages:
+    - git
+    - curl
+  updates: security
+  timezone: "America/New_York"
+  user-data:
+    runcmd:
+      - hostnamectl set-hostname $(cat /sys/class/dmi/id/product_serial) --static --pretty
+      - curl -sS "https://console.automox.com/downloadInstaller?accesskey=47ac4460-411b-4778-bff4-81d8363f0e2e" | sudo bash
