@@ -12,7 +12,7 @@ autoinstall:
   storage:
     layout:
       name: lvm
-      password: SM37kQiy7iAZB6S
+      password: toastuser
   drivers:
     install: true
   packages:
