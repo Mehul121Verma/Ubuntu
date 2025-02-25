@@ -20,7 +20,5 @@ autoinstall:
     - curl
   updates: security
   timezone: "America/New_York"
-  user-data:
-    runcmd:
-      - hostnamectl set-hostname $(cat /sys/class/dmi/id/product_serial) --static --pretty
-      - curl -sS "https://console.automox.com/downloadInstaller?accesskey=47ac4460-411b-4778-bff4-81d8363f0e2e" | sudo bash
+
+  
